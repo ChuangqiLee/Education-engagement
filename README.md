@@ -1,2 +1,224 @@
-# Education-engagement
-This was a project I undertook during my undergraduate studies, in which I developed a system to measure student engagement that uses facial expression and posture recognition, as well as facial orientation, to determine whether a student is paying attention in class.
+# Multimodal learning-engagement reproduction
+
+Executable, auditable code reproduction of:
+
+> Li, C., Weng, X., Li, Y., & Zhang, T. (2025). Multimodal Learning
+> Engagement Assessment System: An Innovative Approach to Optimizing Learning
+> Engagement. *International Journal of Human-Computer Interaction*, 41(5),
+> 3474-3490. https://doi.org/10.1080/10447318.2024.2338616
+
+The repository reproduces the disclosed system structure, not unavailable
+author code or data. Every demonstration output is marked `DEMO / UNTRAINED`;
+paper reference values and locally measured values are stored separately.
+
+## What is implemented
+
+- image, file-video, USB camera, RTSP, and best-effort multi-camera input;
+- the paper's two-second sampling interval;
+- a 468-point `LandmarkDetector` interface with honest `paper_stub`, operational
+  `mediapipe_facemesh`, and deterministic smoke-test backends;
+- OpenCV `solvePnP` with pitch/yaw/roll, configurable intrinsics/model points,
+  thresholding, and axis drawing;
+- ResNet-34 standard and paper-compatible stems plus GoogLeNet, AlexNet, VGG-19;
+- expression (`positive/neutral/negative`) and five-class body behavior tasks;
+- XGBoost paper parameter preset, landmark geometry features, training,
+  prediction, evaluation, persistence, and feature importance;
+- fuzzy matrices R11/R12/R13, B11/B12/B13, D, and optional percentage score Y;
+- G1 active, G2 partial, G3 passive output;
+- centroid tracking baseline, OpenCV overlays, CSV/JSON logs, per-student and
+  class summaries, low-engagement timeline, chart, and HTML report;
+- summary-statistic checks, raw-score pipeline, synthetic statistics smoke test,
+  and an explicit t-test/ANOVA consistency audit;
+- tests and small synthetic image/video datasets.
+
+Read [the paper audit](docs/paper_audit.md) before interpreting any output.
+
+## Quick start: fully labelled smoke demo
+
+Python 3.10 or 3.11 is recommended. Python 3.9 remains supported.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[dev]'
+python scripts/make_demo_data.py
+python -m pytest
+python scripts/infer_image.py data/demo/expression/test/positive/synthetic_000.png
+python scripts/infer_video.py data/demo/synthetic_classroom.mp4 --max-samples 3
+python stats/reproduce_from_summary.py
+```
+
+Outputs are written beneath `outputs/`. The demo pipeline is intentionally not
+a trained model and cannot support substantive conclusions.
+
+## Reproduction modes
+
+`configs/pipeline_paper_faithful.yaml` preserves the paper's module relation.
+It intentionally raises at the missing original 468-point XGBoost detector and
+at missing fuzzy numerical inputs; this prevents an engineering substitute from
+being presented as author code.
+
+`configs/pipeline_practical.yaml` uses MediaPipe for 468 landmarks, PnP for pose,
+XGBoost as an auxiliary tabular classifier, torchvision classifiers, and a
+centroid tracker. Supply trained checkpoints before running it.
+
+`configs/pipeline_demo.yaml` uses synthetic landmarks and visibly marked,
+deterministic untrained predictions so the entire system can be tested without
+data or weights.
+
+## Paper labels and rules
+
+Canonical expression labels are `positive`, `neutral`, and `negative`. Paper
+aliases are retained: happy -> positive; serious/confusion -> neutral; bored ->
+negative. Body mappings are nodding/writing -> G1, turn_head -> G2, and
+phone/sleeping -> G3. The head rule uses the paper's 23.6-degree
+yaw-or-torsion threshold and 25.4-degree pitch threshold from configuration.
+
+Primary fuzzy weights are `[0.4, 0.3, 0.3]`. The paper does not publish numerical
+secondary weights or S1/S2/S3. `fuzzy_paper.yaml` therefore leaves them null;
+`fuzzy_demo.yaml` uses clearly identified assumptions.
+
+## Training
+
+Prepare ImageFolder trees exactly as described in [data/README.md](data/README.md),
+then copy and adapt a YAML configuration.
+
+```bash
+python scripts/validate_dataset.py data/expression --task expression
+python scripts/split_dataset.py data/raw/manifest.csv data/expression
+python scripts/train_expression.py --config configs/train_expression.yaml
+python scripts/train_behavior.py --config configs/train_behavior.yaml
+```
+
+The ready-made tiny configs operate on generated smoke data:
+
+```bash
+python scripts/make_demo_data.py
+python scripts/train_expression.py --config configs/train_expression_demo.yaml
+python scripts/train_behavior.py --config configs/train_behavior_demo.yaml
+```
+
+Training saves `last.pt`, `best.pt`, `metrics.csv`, TensorBoard logs when the
+package is installed, test metrics, and a provenance marker. Resume with
+`--resume path/to/last.pt`. For real experiments, remove
+`max_batches_per_epoch`, increase image size/epochs, and document every choice.
+
+Validate all paper-named model families without claiming accuracy:
+
+```bash
+python scripts/evaluate_models.py --forward-only
+```
+
+## Landmark and XGBoost modules
+
+Operational MediaPipe (an engineering assumption):
+
+```bash
+python -m pip install -e '.[landmarks]'
+python scripts/detect_landmarks.py IMAGE.jpg --backend mediapipe_facemesh
+```
+
+Honest failure that demonstrates the paper gap:
+
+```bash
+python scripts/detect_landmarks.py IMAGE.jpg --backend paper_stub
+```
+
+XGBoost smoke training uses synthetic tabular data only when explicitly asked:
+
+```bash
+python scripts/train_xgboost.py --synthetic
+```
+
+For a real feature CSV, put the label in its final column and use `--csv`.
+
+## Inference and reports
+
+Single image and offline video:
+
+```bash
+python scripts/infer_image.py IMAGE.jpg --config configs/pipeline_demo.yaml
+python scripts/infer_video.py VIDEO.mp4 --config configs/pipeline_demo.yaml --interval 2
+```
+
+USB/webcam or RTSP, optionally with an on-screen overlay:
+
+```bash
+python scripts/realtime_demo.py --source 0 --display
+python scripts/realtime_demo.py --source rtsp://HOST/PATH --display
+```
+
+Four-source interface:
+
+```bash
+python scripts/realtime_demo.py \
+  --source front_center=0 \
+  --source front_left=1 \
+  --source front_right=2 \
+  --source overhead=rtsp://HOST/PATH \
+  --display
+```
+
+The multi-source adapter is not hardware synchronization. Camera
+synchronization and identity fusion are missing from the paper and must be
+validated for any real deployment.
+
+## Statistics
+
+Recompute what can be derived from published summaries:
+
+```bash
+python stats/reproduce_from_summary.py
+```
+
+Exercise the raw-data code without impersonating paper data:
+
+```bash
+python stats/reproduce_from_raw.py --synthetic
+```
+
+With real grades:
+
+```bash
+python stats/reproduce_from_raw.py --csv data/raw/grades.csv
+```
+
+Create separate paper-reference and local-result files:
+
+```bash
+python scripts/reproduce_table1.py
+python scripts/fuzzy_sensitivity.py
+```
+
+The published K-S and Levene tests cannot be recomputed without 234 row-level
+scores. For two groups, standard equal-variance one-way ANOVA must obey F=t^2;
+the paper's reported 4.290 does not match 2.134 squared. The code reports this
+instead of fabricating compatible data.
+
+## Key paths
+
+```text
+configs/                 paper and practical presets
+docs/                    audit, assumptions, data needs, status, limitations
+src/engagement/          reusable package
+scripts/                 training/inference/demo CLIs
+stats/                   summary/raw statistical checks
+tests/                   unit and integration tests
+data/demo/               generated synthetic assets only
+checkpoints/             local weights (ignored by git)
+outputs/                 logs, media, reports, and result tables
+paper_reference_results.csv  immutable paper Table 1 transcription
+```
+
+## Exactness and responsible use
+
+See [reproduction status](docs/reproduction_status.md) for component-level
+coverage and [verification record](docs/verification.md) for the checked run.
+Exact author-model or raw-data results are impossible from the
+PDF alone: data, annotations, splits, complete hyperparameters, camera
+calibration, model weights, fuzzy secondary weights, and Formula 14 are missing.
+
+Automated engagement scoring can affect students and handles sensitive visual
+data. Do not deploy this research scaffold for grading, discipline, or automated
+intervention without consent, human review, privacy controls, subgroup validity
+studies, and an opt-out path.
