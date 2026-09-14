@@ -1,0 +1,19 @@
+task: body_behavior
+data_dir: data/demo/body_behavior
+classes: [nodding, writing, turn_head, phone, sleeping]
+model:
+  name: resnet34_paper_compatible
+  num_classes: 5
+  pretrained: false
+  freeze_backbone: false
+training:
+  seed: 42
+  epochs: 1
+  batch_size: 4
+  learning_rate: 0.001
+  patience: 1
+  num_workers: 0
+  device: auto
+  max_batches_per_epoch: 1
+output_dir: outputs/training/behavior_demo
+

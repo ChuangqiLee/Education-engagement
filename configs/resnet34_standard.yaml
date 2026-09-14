@@ -1,0 +1,13 @@
+model:
+  name: resnet34_standard
+  num_classes: 3
+  pretrained: false
+  freeze_backbone: false
+training:
+  seed: 42
+  epochs: 20
+  batch_size: 32
+  learning_rate: 0.001  # [ASSUMPTION] not reported by the paper
+  patience: 5
+  device: auto
+

@@ -1,0 +1,27 @@
+mode: practical_reproduction
+sample_interval_seconds: 2.0
+demo: false
+landmarks:
+  backend: mediapipe_facemesh
+  expected_points: 468
+models:
+  expression: resnet34_standard
+  behavior: resnet34_standard
+  checkpoint_expression: null
+  checkpoint_behavior: null
+xgboost:
+  config: configs/xgboost_paper.yaml
+  checkpoint: null
+head_pose:
+  yaw_or_torsion_threshold_degrees: 23.6
+  pitch_threshold_degrees: 25.4
+  # [ASSUMPTION] default camera/model geometry lives in the implementation.
+  camera_intrinsics: null
+  model_points: null
+fuzzy:
+  config: configs/fuzzy_demo.yaml
+tracking:
+  backend: centroid
+  max_distance_pixels: 80
+  max_missing_frames: 8
+

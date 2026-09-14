@@ -1,0 +1,17 @@
+model:
+  name: resnet34_paper_compatible
+  num_classes: 3
+  pretrained: false
+  freeze_backbone: false
+  stem_kernel_size: 3     # [PAPER-compatible interpretation]
+  stem_stride: 1
+  stem_padding: 1
+  remove_maxpool: true    # [ASSUMPTION] resolves unspecified downsampling
+training:
+  seed: 42
+  epochs: 20
+  batch_size: 32
+  learning_rate: 0.001    # [ASSUMPTION]
+  patience: 5
+  device: auto
+

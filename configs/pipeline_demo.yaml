@@ -1,0 +1,17 @@
+mode: practical_reproduction
+sample_interval_seconds: 2.0
+demo: true
+landmarks:
+  backend: synthetic
+  expected_points: 468
+models:
+  expression: demo_untrained
+  behavior: demo_untrained
+head_pose:
+  yaw_or_torsion_threshold_degrees: 23.6
+  pitch_threshold_degrees: 25.4
+fuzzy:
+  config: configs/fuzzy_demo.yaml
+tracking:
+  backend: centroid
+

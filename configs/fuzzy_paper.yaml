@@ -1,0 +1,11 @@
+provenance: PAPER
+primary_weights: [0.4, 0.3, 0.3]
+secondary_weights:
+  facial_expression: null
+  head_pose: null
+  body_behavior: null
+score_vector: null
+thresholds:
+  yaw_or_torsion_degrees: 23.6
+  pitch_degrees: 25.4
+

@@ -1,0 +1,13 @@
+provenance: ASSUMPTION
+primary_weights: [0.4, 0.3, 0.3]
+# Demonstration defaults only. The paper leaves these numerical weights unresolved.
+secondary_weights:
+  facial_expression: [0.3333333333, 0.3333333333, 0.3333333334]
+  head_pose: [0.25, 0.25, 0.25, 0.25]
+  body_behavior: [0.2, 0.2, 0.2, 0.2, 0.2]
+# [ASSUMPTION] percentage-scale representatives; configurable at runtime.
+score_vector: [100.0, 60.0, 20.0]
+thresholds:
+  yaw_or_torsion_degrees: 23.6
+  pitch_degrees: 25.4
+

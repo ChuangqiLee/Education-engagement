@@ -1,0 +1,19 @@
+task: expression
+data_dir: data/expression
+classes: [positive, neutral, negative]
+model:
+  name: resnet34_standard
+  num_classes: 3
+  pretrained: false
+  freeze_backbone: false
+training:
+  seed: 42
+  epochs: 20
+  batch_size: 32
+  learning_rate: 0.001  # [ASSUMPTION] not reported in the paper
+  patience: 5
+  num_workers: 2
+  image_size: 224
+  device: auto
+output_dir: outputs/training/expression
+

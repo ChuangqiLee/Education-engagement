@@ -1,0 +1,15 @@
+provenance: ASSUMPTION
+thresholds:
+  yaw_or_torsion_degrees: 23.6
+  pitch_degrees: 25.4
+camera:
+  focal_length_rule: image_width
+  principal_point_rule: image_center
+# Generic six-point face geometry in millimetre-like relative units.
+model_points:
+  nose_tip: [0.0, 0.0, 0.0]
+  chin: [0.0, 330.0, -65.0]
+  left_eye_outer: [-225.0, -170.0, -135.0]
+  right_eye_outer: [225.0, -170.0, -135.0]
+  left_mouth: [-150.0, 150.0, -125.0]
+  right_mouth: [150.0, 150.0, -125.0]
