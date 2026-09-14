@@ -1,0 +1,8 @@
+source,run_name,smoothed,value,step,relative_time,provenance
+Li_et_al_Table_1,googlenet_test,85.36,85.56,20,1h30m34s,PAPER_REFERENCE_NOT_REPRODUCED
+Li_et_al_Table_1,googlenet_test_batch_size64,84.73,84.81,32,4h35m23s,PAPER_REFERENCE_NOT_REPRODUCED
+Li_et_al_Table_1,resnet34_test,97.55,97.59,33,3h13m37s,PAPER_REFERENCE_NOT_REPRODUCED
+Li_et_al_Table_1,resnet34_test_batch_size80_short,67.39,70.44,5,20m58s,PAPER_REFERENCE_NOT_REPRODUCED
+Li_et_al_Table_1,resnet34_test_batch_size80,97.79,98.00,27,7h38m35s,PAPER_REFERENCE_NOT_REPRODUCED
+Li_et_al_Table_1,vgg19_test,80.65,81.77,23,11h21m20s,PAPER_REFERENCE_NOT_REPRODUCED
+

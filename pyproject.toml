@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multimodal-engagement-reproduction"
+version = "0.1.0"
+description = "Transparent code reproduction of Li et al.'s multimodal classroom engagement system"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "Reproduction contributors"}]
+dependencies = [
+  "numpy>=1.23,<3",
+  "PyYAML>=6",
+  "Pillow>=9",
+  "opencv-python>=4.8",
+  "scipy>=1.9",
+  "scikit-learn>=1.2",
+  "pandas>=1.5",
+  "matplotlib>=3.6",
+  "xgboost>=1.7",
+  "torch>=2.0",
+  "torchvision>=0.15",
+]
+
+[project.optional-dependencies]
+landmarks = ["mediapipe==0.10.21", "protobuf>=4.25.3,<5"]
+dashboard = ["streamlit>=1.30"]
+reports = ["reportlab>=4"]
+dev = ["pytest>=7", "tensorboard>=2.12"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+addopts = "-ra"
+markers = [
+  "optional_dependency: requires an optional heavyweight dependency",
+]
